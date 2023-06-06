@@ -4,7 +4,6 @@ import Image from "next/image";
 import {
   LightBulbIcon,
   MagnifyingGlassIcon,
-  UserCircleIcon,
 } from "@heroicons/react/24/solid";
 import Avatar from "react-avatar";
 
@@ -53,7 +52,7 @@ const Header = () => {
         className="flex items-center justify-center px5 py-2
       md:py-10"
       >
-        <p className="flex items-center text-sm font-light pr-5 shadow-lg rounded-xl w-fit bg-white italic max-w-3xl p-5 text-lg">
+        <p className="flex items-center font-light pr-5 shadow-lg rounded-xl w-fit bg-white italic max-w-3xl p-5 text-lg">
           <LightBulbIcon className="inline-block h-10 w-10 text-neutral-700 mr-1" />
           GPT is summarising your tasks for today..🚀
         </p>
