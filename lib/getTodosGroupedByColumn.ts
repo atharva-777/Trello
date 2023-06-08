@@ -1,3 +1,4 @@
+import Board from "@/Components/Board";
 import { databases } from "@/appwrite";
 
 export const getTodosGroupedByColumn = async () => {
@@ -6,7 +7,6 @@ export const getTodosGroupedByColumn = async () => {
     process.env.NEXT_PUBLIC_TODOS_COLLECTION_ID!
   );
   const todos = data.documents;
-  console.log(todos)
   const columns = todos.reduce((acc, todo) => {
     if (!acc.get(todo.status)) {
       acc.set(todo.status, {
@@ -23,5 +23,28 @@ export const getTodosGroupedByColumn = async () => {
     });
     return acc;
   }, new Map<TypedColumn, Column>());
-  console.log(columns)
+
+  // It will always add 3 three columns even if one of them is empty
+
+  const columnTypes: TypedColumn[] = ["todo", "inprogress", "done"];
+  for (const columnType of columnTypes) {
+    if (!columns.get(columnType)) {
+      columns.set(columnType, {
+        id: columnType,
+        todos: [],
+      });
+    }
+  }
+
+  // sort the columns in order as todo -> inprogress -> done
+
+  const sortedColumns = new Map(
+    Array.from(columns.entries()).sort(
+      (a, b) => columnTypes.indexOf(a[0]) - columnTypes.indexOf(b[0])
+    )
+  );
+  const board : Board =  {
+    columns : sortedColumns,
+  }
+  return board;
 };
