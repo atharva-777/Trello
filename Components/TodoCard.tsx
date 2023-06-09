@@ -1,7 +1,8 @@
 "use client";
 
-import React from 'react'
-import { DraggableProvidedDraggableProps } from 'react-beautiful-dnd';
+import { XCircleIcon } from "@heroicons/react/24/solid";
+import React from "react";
+import { DraggableProvidedDraggableProps } from "react-beautiful-dnd";
 
 type Props = {
   todo: Todo;
@@ -9,20 +10,32 @@ type Props = {
   index: number;
   innerRef: (element: HTMLElement | null) => void;
   draggableProps: DraggableProvidedDraggableProps;
-  dragHandleProps : DraggableProvidedDraggableProps|null|undefined;
+  dragHandleProps: DraggableProvidedDragHandleProps | null | undefined;
 };
 
-const TodoCard = ({todo,index,id,innerRef,draggableProps,dragHandleProps}:Props) => {
+const TodoCard = ({
+  todo,
+  index,
+  id,
+  innerRef,
+  draggableProps,
+  dragHandleProps,
+}: Props) => {
   return (
     <div
-    {...draggableProps}
-    {...dragHandleProps}
-    ref={innerRef}
-    className='bg-white rounded-md space-y-2 drop-shadow-md'
+      {...draggableProps}
+      {...dragHandleProps}
+      ref={innerRef}
+      className="bg-white rounded-md space-y-2 drop-shadow-md"
     >
-        <h1>Task</h1>
+      <div className="flex justify-between items-center p-5">
+        <p>{todo.title}</p>
+        <button className="text-red-500 hover:text-red-600">
+          <XCircleIcon className="h-8 w-8 ml-5" />
+        </button>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default TodoCard
+export default TodoCard;
