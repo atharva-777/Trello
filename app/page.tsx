@@ -1,5 +1,7 @@
 import Header from "@/Components/Header"
 import Board from "@/Components/Board"
+import Login from "@/Components/Login"
+import Register from "@/Components/Register"
 export default function Home() {
   return (
     <main>
@@ -7,6 +9,8 @@ export default function Home() {
       <Header/>
       {/* Body */}
       <Board/>
+      <Register/>
+      <Login/>
     </main>
   )
 }
