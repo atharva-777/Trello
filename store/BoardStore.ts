@@ -1,18 +1,21 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 import { getTodosGroupedByColumn } from "@/lib/getTodosGroupedByColumn";
-import { databases } from '@/appwrite';
+import { databases, storage } from "@/appwrite";
+import { data } from "autoprefixer";
+import { Type } from "typescript";
 
 interface BoardState {
-    board: Board;
-    getBoard: ()=>void;
-    setBoardState: (board:Board) => void;
-    updateTodoInDB : (todo:Todo,columnId:TypedColumn) => void
-    searchString: string;
-    setSearchString: (searchString: string) => void;
+  board: Board;
+  getBoard: () => void;
+  setBoardState: (board: Board) => void;
+  updateTodoInDB: (todo: Todo, columnId: TypedColumn) => void;
+  searchString: string;
+  setSearchString: (searchString: string) => void;
+
+  deleteTask: (taskIndex: number, todoId: Todo, id: TypedColumn) => void;
 }
 
-
-export const useBoardStore = create<BoardState>((set) => ({
+export const useBoardStore = create<BoardState>((set, get) => ({
   board: {
     columns: new Map<TypedColumn, Column>(),
   },
@@ -22,17 +25,35 @@ export const useBoardStore = create<BoardState>((set) => ({
   },
   setBoardState: (board) => set({ board }),
 
-  updateTodoInDB: async(todo,columnId)=>{
+  deleteTask: async (taskIndex:number, todo:Todo, id:TypedColumn) => {
+    const newColumns = new Map(get().board.columns);
+    // delete todoID from newColumns
+    newColumns.get(id)?.todos.splice(taskIndex, 1);
+    set({ board: { columns: newColumns } });
+
+    if (todo.image) {
+      await storage.deleteFile(todo.image.bucketId, todo.image.fileId);
+    }
+
+    await databases.deleteDocument(
+      process.env.NEXT_PUBLIC_TRELLO_DATABASE_ID!,
+      process.env.NEXT_PUBLIC_TODOS_COLLECTION_ID!,
+      todo.$id
+    );
+    
+  },
+
+  updateTodoInDB: async (todo, columnId) => {
     await databases.updateDocument(
       process.env.NEXT_PUBLIC_TRELLO_DATABASE_ID!,
       process.env.NEXT_PUBLIC_TODOS_COLLECTION_ID!,
       todo.$id,
       {
-        title : todo.title,
-        status : columnId,
+        title: todo.title,
+        status: columnId,
       }
     );
   },
-  searchString:"",  
-  setSearchString: (searchString) => set({searchString}),
+  searchString: "",
+  setSearchString: (searchString) => set({ searchString }),
 }));
