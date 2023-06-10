@@ -1,14 +1,32 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { LightBulbIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { MagnifyingGlassIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import Avatar from "react-avatar";
 import { useBoardStore } from "@/store/BoardStore";
+import fetchSuggestion from "@/lib/fetchSuggestion";
 
 const Header = () => {
-  const [serachString,setSearchString] = useBoardStore((state)=>[
-    state.searchString,state.setSearchString,  
-  ])
+  const [board, serachString, setSearchString] = useBoardStore((state) => [
+    state.board,
+    state.searchString,
+    state.setSearchString,
+  ]);
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [suggestion, setSuggestion] = useState<string>("");
+
+  useEffect(() => {
+    if (board.columns.size === 0) return;
+    setLoading(true);
+    const fetchSuggestionFunc = async () => {
+      const suggestion = await fetchSuggestion(board);
+      setSuggestion(suggestion);
+      setLoading(false);
+    };
+    fetchSuggestionFunc();
+  }, [board]);
+
   return (
     <header>
       <div className="flex flex-col md:flex-row items-center bg-gray-800/10 rounded-b-2xl">
@@ -31,7 +49,7 @@ const Header = () => {
               placeholder="Search"
               className="flex-1 outline-none p-2"
               value={serachString}
-              onChange={e=>setSearchString(e.target.value)}
+              onChange={(e) => setSearchString(e.target.value)}
             />
             <button type="submit" hidden>
               Seach
@@ -53,8 +71,14 @@ const Header = () => {
       md:py-10"
       >
         <p className="flex items-center font-light pr-5 shadow-lg rounded-xl w-fit bg-white italic max-w-3xl p-5 text-lg">
-          <LightBulbIcon className="inline-block h-10 w-10 text-neutral-700 mr-1" />
-          GPT is summarising your tasks for today..🚀
+          <UserCircleIcon
+            className={`inline-block h-10 w-10 text-neutral-700 mr-1 
+          ${loading && "animate-spin"}
+          `}
+          />
+          {suggestion && !loading
+            ? suggestion
+            : "GPT is summarising your tasks for today..🚀"}
         </p>
       </div>
     </header>

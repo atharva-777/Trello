@@ -9,8 +9,8 @@ export default function Home() {
       <Header/>
       {/* Body */}
       <Board/>
-      <Register/>
-      <Login/>
+      {/* <Register/>
+      <Login/> */}
     </main>
   )
 }
