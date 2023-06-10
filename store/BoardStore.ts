@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import { getTodosGroupedByColumn } from "@/lib/getTodosGroupedByColumn";
 import { databases, storage } from "@/appwrite";
-import { data } from "autoprefixer";
-import { Type } from "typescript";
+
 
 interface BoardState {
   board: Board;
@@ -13,6 +12,12 @@ interface BoardState {
   setSearchString: (searchString: string) => void;
 
   deleteTask: (taskIndex: number, todoId: Todo, id: TypedColumn) => void;
+
+  newTaskInput: string;
+  setNewTaskInput: (newTask: string) => void;
+
+  newTaskType: TypedColumn;
+  setNewTaskType: (newTaskType:TypedColumn) => void;
 }
 
 export const useBoardStore = create<BoardState>((set, get) => ({
@@ -25,7 +30,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   },
   setBoardState: (board) => set({ board }),
 
-  deleteTask: async (taskIndex:number, todo:Todo, id:TypedColumn) => {
+  deleteTask: async (taskIndex: number, todo: Todo, id: TypedColumn) => {
     const newColumns = new Map(get().board.columns);
     // delete todoID from newColumns
     newColumns.get(id)?.todos.splice(taskIndex, 1);
@@ -40,7 +45,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       process.env.NEXT_PUBLIC_TODOS_COLLECTION_ID!,
       todo.$id
     );
-    
   },
 
   updateTodoInDB: async (todo, columnId) => {
@@ -55,5 +59,9 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     );
   },
   searchString: "",
-  setSearchString: (searchString) => set({ searchString }),
+  newTaskInput: "",
+  setSearchString: (searchString:string) => set({ searchString }),
+  setNewTaskInput: (newTaskInput:string) => set({newTaskInput:newTaskInput}), 
+  newTaskType:'todo',
+  setNewTaskType:(input:TypedColumn)=>set({newTaskType:input}), 
 }));
