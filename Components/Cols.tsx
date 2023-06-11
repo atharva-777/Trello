@@ -56,13 +56,15 @@ const Cols = ({ id, todos, index }: Props) => {
                       key={todo.$id}
                       index={index}
                     >
+
+                      {/* comment if below to remove error */}
                       {(provided) => {
-                        if (
-                          searchString &&
-                          !todo.title
-                            .toLowerCase()
-                            .includes(searchString.toLowerCase())
-                        ) return null;
+                        // if (
+                        //   searchString &&
+                        //   !todo.title
+                        //     .toLowerCase()
+                        //     .includes(searchString.toLowerCase())
+                        // ) return null;
 
                         
 

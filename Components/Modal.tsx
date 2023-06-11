@@ -1,23 +1,49 @@
 "use client";
 import { useModalState } from "@/store/ModalStore";
 
-import { useState, Fragment } from "react";
+import { useState, Fragment, useRef, FormEvent } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useBoardStore } from "@/store/BoardStore";
 import TaskTypeRadioGroup from "./TaskTypeRadioGroup";
+import Image from "next/image";
+import { PhotoIcon } from "@heroicons/react/24/solid";
 
 export default function Modal() {
+  const imagePickerRef = useRef<HTMLInputElement>(null);
   const [isOpen, closeModal] = useModalState((state) => [
     state.isOpean,
     state.closeModal,
   ]);
 
-  const [newTaskInput,setNewTaskInput] = useBoardStore((state)=>[state.newTaskInput,state.setNewTaskInput])
+  const [addTask, newTaskInput, setNewTaskInput, setImage, image, newTaskType] =
+    useBoardStore((state) => [
+      state.addTask,
+      state.newTaskInput,
+      state.setNewTaskInput,
+      state.setImage,
+      state.image,
+      state.newTaskType,
+    ]);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if(!newTaskInput)return;
+
+    // add task
+    addTask(newTaskInput,newTaskType,image);
+    setImage(null);
+    closeModal();
+  };
 
   return (
     // Use the `Transition` component at the root level
     <Transition show={isOpen} as={Fragment} appear>
-      <Dialog as="form" onClose={closeModal} className="relative z-10">
+      <Dialog
+        onSubmit={handleSubmit}
+        as="form"
+        onClose={closeModal}
+        className="relative z-10"
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -46,13 +72,57 @@ export default function Modal() {
                 </Dialog.Title>
 
                 <div className="mt-2">
-                    <input type="text" value={newTaskInput} onChange={(e)=>setNewTaskInput(e.target.value)}
-                    placeholder="Enter a new Task" className="w-full border border-gray-300 rounded-md outline-none p-5" />
+                  <input
+                    type="text"
+                    value={newTaskInput}
+                    onChange={(e) => setNewTaskInput(e.target.value)}
+                    placeholder="Enter a new Task"
+                    className="w-full border border-gray-300 rounded-md outline-none p-5"
+                  />
                 </div>
 
                 {/* Radio Group */}
-                <TaskTypeRadioGroup/>
+                <TaskTypeRadioGroup />
 
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      imagePickerRef.current?.click();
+                    }}
+                    className="w-full border border-gray-300 rounded-md outline-none p-5 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  >
+                    <PhotoIcon className="h-6 w-6 mr-2 inline-block" />
+                    Upload Image
+                  </button>
+
+                  {image && (
+                    <Image
+                      alt="uploaded image"
+                      width={200}
+                      height={200}
+                      className="w-full h-44 object-cover mt-2 filter hover:grayscale transition-all duration-150 cursor-not-allowed"
+                      src={URL.createObjectURL(image)}
+                      onClick={() => {
+                        setImage(null);
+                      }}
+                    />
+                  )}
+                  <input
+                    type="file"
+                    ref={imagePickerRef}
+                    hidden
+                    onChange={(e) => {
+                      if (!e.target.files![0].type.startsWith("image/")) return;
+                      setImage(e.target.files![0]);
+                    }}
+                  />
+                </div>
+                <div className="flex rounded-md mt-4 p-2 justify-center bg-green-400">
+                  <button type="submit" disabled={!newTaskInput}>
+                    Add Task
+                  </button>
+                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>
