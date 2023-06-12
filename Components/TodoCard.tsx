@@ -40,6 +40,7 @@ const TodoCard = ({
           setImageUrl(url.toString());
         }
       };
+      fetchImage();
     }
   }, [todo]);
 
