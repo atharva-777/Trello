@@ -2,7 +2,9 @@ import formatTodosForAI from "./formatTodosForAI";
 
 const fetchSuggestion = async (board:Board) => {
     const todos = formatTodosForAI(board);
-    console.log("Formatted todos to send to chatGPT ",todos)
+
+    // this is the actual request going to openai 
+    // It needs paid subscription of API for this
 
     // const res = await fetch("/api/generateSummary",{
     //     method:"POST",
