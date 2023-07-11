@@ -5,12 +5,8 @@ import Register from "@/Components/Register"
 export default function Home() {
   return (
     <main>
-      {/* Header */}
       <Header/>
-      {/* Body */}
       <Board/>
-      {/* <Register/>
-      <Login/> */}
     </main>
   )
 }
